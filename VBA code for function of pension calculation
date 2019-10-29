@@ -1,0 +1,321 @@
+Function cum_gp(G As String, male_q As Variant, female_q As Variant, age As Integer, year As Double, t As Integer)
+
+
+    Dim I As Integer
+    
+    
+    cum_gp = 1
+    
+    If t > 0 Then
+    
+        For I = age To age + t - 1
+        
+            cum_gp = cum_gp * (1 - gen_p(G, male_q, female_q, I, year + (I - age)))
+            
+    
+        Next I
+        
+    End If
+    
+
+End Function
+
+Function cum_totalP(G As String, male_q As Variant, female_q As Variant, r_q As Variant, t_q As Variant, age As Integer, year As Double, t As Integer)
+
+
+    Dim I As Integer
+    
+    
+    cum_totalP = 1
+    
+    If t > 0 Then
+    
+        For I = age To age + t - 1
+        
+            cum_totalP = cum_totalP * totalP(G, male_q, female_q, r_q, t_q, I, year + (I - age))
+            
+    
+        Next I
+        
+    End If
+    
+
+End Function
+
+Function totalP(G As String, male_q As Variant, female_q As Variant, r_q As Variant, t_q As Variant, age As Integer, year As Double)
+
+    totalP = 1 - retire_q(r_q, age) - terminate_q(t_q, age) - gen_p(G, male_q, female_q, age, year)
+    
+    If totalP < 0 Then
+    
+        totalP = 0
+        
+    End If
+
+End Function
+
+
+Function gen_p(G As String, male_q As Variant, female_q As Variant, age As Integer, year As Double)
+
+If G = "M" Then
+    
+'    If year <= 2034 Then
+
+        gen_p = male_q(age - 20 + 2, year - 2014 + 2)
+        
+'    Else
+'
+'        year = 2034
+'        gen_p = male_q(age - 20 + 2, year - 2014 + 2)
+'
+'    End If
+    
+    
+Else
+
+'    If year <= 2034 Then
+
+        gen_p = female_q(age - 20 + 2, year - 2014 + 2)
+        
+'    Else
+'
+'        year = 2034
+'        gen_p = female_q(age - 20 + 2, year - 2014 + 2)
+        
+'    End If
+
+End If
+
+
+End Function
+
+
+Function retire_q(r_q As Variant, age As Integer)
+
+
+retire_q = r_q(age - 20 + 2)
+
+
+End Function
+
+
+
+
+Function terminate_q(t_q As Variant, age As Integer)
+
+
+terminate_q = t_q(age - 20 + 2)
+
+
+End Function
+
+
+Function BFT(b As Variant, age As Integer, base As Integer)
+
+    BFT = b(age - base + 2)
+
+
+End Function
+
+Function EarlyRetireF(I As Integer)
+
+    If I >= 55 And I < 65 Then
+        EarlyRetireF = (0.5 + 0.05 * (I - 55))
+    ElseIf I >= 65 Then
+        EarlyRetireF = 1
+        
+    End If
+    
+
+End Function
+
+Function AnnualPay(OriginalSalary As Double, I As Integer, age As Integer)
+
+AnnualPay = OriginalSalary
+
+AnnualPay = AnnualPay * (1 + 0.025) ^ (I - age)
+
+End Function
+
+Function ServiceYear(OriginalServiceYear As Integer, I As Integer, age As Integer)
+
+
+ServiceYear = OriginalServiceYear + I - age
+
+
+End Function
+
+
+Function PensionBenefit(OriginalServiceYear As Integer, OriginalSalary As Double, I As Integer, age As Integer)
+
+
+PensionBenefit = 0.01 * ServiceYear(OriginalServiceYear, I, age) * AnnualPay(OriginalSalary, I, age)
+
+
+End Function
+
+
+
+            
+Function rPVB_g(G As String, male_q As Variant, female_q As Variant, age As Integer, base As Integer, year As Double, b As Variant, rate As Double)
+
+Dim I As Integer
+rPVB_g = 0
+
+'If age >= 55 Then
+
+    For I = age To 120
+    
+        If I >= 65 Then
+        
+            rPVB_g = rPVB_g + BFT(b, age, base) * (1 + rate) ^ (-I + age) * cum_gp(G, male_q, female_q, age, year, I - age)
+        
+        ElseIf I < 65 Then
+        
+            rPVB_g = rPVB_g + BFT(b, age, base) * (1 + rate) ^ (-I + age) * cum_gp(G, male_q, female_q, age, year, I - age) '* EarlyRetireF(I)
+            
+        End If
+        
+    Next I
+    
+'End If
+
+End Function
+           
+            
+Function tvPVB_g(G As String, male_q As Variant, female_q As Variant, age As Integer, base As Integer, year As Double, b As Variant, rate As Double)
+
+Dim I As Integer
+tvPVB_g = 0
+
+'    If age < 55 Then
+        
+
+        For I = age To 120
+        
+            If I < 65 Then
+            
+                tvPVB_g = 0
+                
+            ElseIf I >= 65 Then
+            
+                tvPVB_g = tvPVB_g + BFT(b, age, base) * (1 + rate) ^ (-I + age) * cum_gp(G, male_q, female_q, age, year, I - age)
+            
+            End If
+            
+        Next I
+        
+        
+'    End If
+    
+
+End Function
+
+Function DiscountFactor(rate As Double, I As Integer, age As Integer)
+
+DiscountFactor = (1 + rate) ^ (-I + age)
+
+End Function
+
+
+Function aPVB_g(G As String, post_male_q As Variant, post_female_q As Variant, pre_male_q As Variant, pre_female_q As Variant, r_q As Variant, t_q As Variant, age As Integer, year As Double, b As Variant, rate As Double)
+
+
+
+Dim I As Integer
+Dim j As Integer
+
+aPVB_g = 0
+
+    For I = age To 70
+    
+        If I > 0 And I <= 54 Then
+        
+
+            aPVB_g = aPVB_g + DiscountFactor(rate, I, age) * cum_totalP(G, pre_male_q, pre_female_q, r_q, t_q, age, year, I - age) * (terminate_q(t_q, I) * tvPVB_g(G, post_male_q, post_female_q, I, age, year + I - age, b, rate))
+            
+        
+        ElseIf I >= 55 Then
+        
+            
+            aPVB_g = aPVB_g + DiscountFactor(rate, I, age) * cum_totalP(G, pre_male_q, pre_female_q, r_q, t_q, age, year, I - age) * (retire_q(r_q, I) * rPVB_g(G, post_male_q, post_female_q, I, age, year + I - age, b, rate) * EarlyRetireF(I))
+        
+            
+        End If
+        
+    Next I
+    
+End Function
+
+
+
+Function SVC(service As Variant, age As Integer, base As Integer)
+
+
+    SVC = service(age - base + 2)
+
+
+End Function
+
+
+
+
+
+Function BO(G As String, post_male_q As Variant, post_female_q As Variant, pre_male_q As Variant, pre_female_q As Variant, r_q As Variant, t_q As Variant, service As Variant, age As Integer, base As Integer, year As Double, b As Variant, rate As Double)
+
+Dim I As Integer
+Dim j As Integer
+
+BO = 0
+
+    For I = age To 70
+    
+        If I > 0 And I < 55 Then
+        
+
+            BO = BO + (1 + rate) ^ (age - I) * cum_totalP(G, pre_male_q, pre_female_q, r_q, t_q, age, year, I - age) * (terminate_q(t_q, I) * tvPVB_g(G, post_male_q, post_female_q, I, age, year + I - age, b, rate)) * (SVC(service, base, base) / (SVC(service, I, base)))
+            
+            
+        
+        ElseIf I >= 55 Then
+        
+            
+            BO = BO + (1 + rate) ^ (age - I) * cum_totalP(G, pre_male_q, pre_female_q, r_q, t_q, age, year, I - age) * (retire_q(r_q, I) * rPVB_g(G, post_male_q, post_female_q, I, age, year + I - age, b, rate) * EarlyRetireF(I)) * (SVC(service, base, base) / (SVC(service, I, base)))
+    
+            
+        End If
+        
+    Next I
+    
+End Function
+
+
+Function ServiceCost(G As String, post_male_q As Variant, post_female_q As Variant, pre_male_q As Variant, pre_female_q As Variant, r_q As Variant, t_q As Variant, service As Variant, age As Integer, base As Integer, year As Double, b As Variant, rate As Double)
+
+Dim I As Integer
+Dim j As Integer
+
+ServiceCost = 0
+
+    For I = age To 70
+    
+        If I > 0 And I < 55 Then
+        
+
+            ServiceCost = ServiceCost + (1 + rate) ^ (age - I) * cum_totalP(G, pre_male_q, pre_female_q, r_q, t_q, age, year, I - age) * (terminate_q(t_q, I) * tvPVB_g(G, post_male_q, post_female_q, I, age, year + I - age, b, rate)) * (1 / (SVC(service, I, base)))
+            
+        
+        ElseIf I >= 55 Then
+        
+            
+            ServiceCost = ServiceCost + (1 + rate) ^ (age - I) * cum_totalP(G, pre_male_q, pre_female_q, r_q, t_q, age, year, I - age) * (retire_q(r_q, I) * rPVB_g(G, post_male_q, post_female_q, I, age, year + I - age, b, rate) * EarlyRetireF(I)) * (1 / (SVC(service, I, base)))
+        
+            
+        End If
+        
+    Next I
+    
+End Function
+
+
+        
