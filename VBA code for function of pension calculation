@@ -58,36 +58,20 @@ End Function
 Function gen_p(G As String, male_q As Variant, female_q As Variant, age As Integer, year As Double)
 
 If G = "M" Then
-    
-'    If year <= 2034 Then
 
         gen_p = male_q(age - 20 + 2, year - 2014 + 2)
-        
-'    Else
-'
-'        year = 2034
-'        gen_p = male_q(age - 20 + 2, year - 2014 + 2)
-'
-'    End If
-    
-    
+      
 Else
 
-'    If year <= 2034 Then
-
         gen_p = female_q(age - 20 + 2, year - 2014 + 2)
-        
-'    Else
-'
-'        year = 2034
-'        gen_p = female_q(age - 20 + 2, year - 2014 + 2)
-        
-'    End If
 
 End If
 
 
 End Function
+
+
+
 
 
 Function retire_q(r_q As Variant, age As Integer)
@@ -97,6 +81,9 @@ retire_q = r_q(age - 20 + 2)
 
 
 End Function
+
+
+
 
 
 
@@ -111,6 +98,9 @@ End Function
 
 
 
+
+
+
 Function EarlyRetireF(I As Integer)
 
     If I >= 55 And I < 65 Then
@@ -119,9 +109,12 @@ Function EarlyRetireF(I As Integer)
         EarlyRetireF = 1
         
     End If
-    
+
 
 End Function
+
+
+
 
 Function AnnualPay(OriginalSalary As Double, I As Integer, age As Integer)
 
@@ -130,6 +123,9 @@ AnnualPay = OriginalSalary
 AnnualPay = AnnualPay * (1 + 0.025) ^ (I - age)
 
 End Function
+
+
+
 
 Function ServiceYear(OriginalServiceYear As Integer, I As Integer, age As Integer)
 
@@ -140,6 +136,10 @@ ServiceYear = OriginalServiceYear + I - age
 End Function
 
 
+
+
+
+
 Function PensionBenefit(OriginalServiceYear As Integer, OriginalSalary As Double, I As Integer, age As Integer)
 
 
@@ -147,6 +147,9 @@ PensionBenefit = 0.01 * ServiceYear(OriginalServiceYear, I, age) * AnnualPay(Ori
 
 
 End Function
+
+
+
 
 
 
@@ -175,7 +178,9 @@ rPVB_g = 0
 'End If
 
 End Function
-           
+     
+     
+     
             
 Function tvPVB_g(G As String, male_q As Variant, female_q As Variant, OriginalServiceYear As Integer, OriginalSalary As Double, age As Integer, base As Integer, year As Double, rate As Double)
 
@@ -205,11 +210,20 @@ tvPVB_g = 0
 
 End Function
 
+
+
+
+
 Function DiscountFactor(rate As Double, I As Integer, age As Integer)
 
 DiscountFactor = (1 + rate) ^ (-I + age)
 
 End Function
+
+
+
+
+
 
 
 Function aPVB_g(G As String, post_male_q As Variant, post_female_q As Variant, pre_male_q As Variant, pre_female_q As Variant, r_q As Variant, t_q As Variant, OriginalServiceYear As Integer, OriginalSalary As Double, age As Integer, year As Double, rate As Double)
@@ -245,6 +259,10 @@ End Function
 
 
 
+
+
+
+
 Function BO(G As String, post_male_q As Variant, post_female_q As Variant, pre_male_q As Variant, pre_female_q As Variant, r_q As Variant, t_q As Variant, OriginalServiceYear As Integer, OriginalSalary As Double, age As Integer, year As Double, rate As Double)
 
 
@@ -274,6 +292,15 @@ BO = 0
     Next I
     
 End Function
+
+
+
+
+
+
+
+
+
 
 Function ServiceCost(G As String, post_male_q As Variant, post_female_q As Variant, pre_male_q As Variant, pre_female_q As Variant, r_q As Variant, t_q As Variant, OriginalServiceYear As Integer, OriginalSalary As Double, age As Integer, year As Double, rate As Double)
 
