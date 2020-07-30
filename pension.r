@@ -41,22 +41,36 @@ Cumulative.Generational.Survival.Rate <- function(gender, current_age, current_y
     for (i in current_age:(target_age-1)) {
       c.g.s.r <- c.g.s.r * (1 - Generational.Mortality(gender, i, current_year + i - current_age))
     }
-    return(c.g.s.r)
   }
+  return(c.g.s.r)
 }
 
-Pension.Benefit.Retiree <- function(){
+Pension.Benefit.Retiree <- function(service.year, salary, current_age, target_age){
   
-  
-  p.b.r <- 0.01 * (service.year)
-  
+  p.b.r <- 0.01 * (service.year + target_age - current_age) * (salary *(1+0.025)^(target_age - current_age))
+  return(p.b.r)
 }
 
 
 
+PVB.retiree <- function(gender, current_age, current_year, benefit){
+  
+  r.pvb <- 0
+  for (i in current_age:120) {
+    if (i >= 65){
+      r.pvb <- r.pvb + Cumulative.Generational.Survival.Rate(gender, current_age, current_year, i) * benefit * (1 + interest)^(-i + current_age)
+    }
+    else if (i < 65){
+      r.pvb <- r.pvb + Cumulative.Generational.Survival.Rate(gender, current_age, current_year, i) * benefit * (1 + interest)^(-i + current_age)
+    }  
+  }
+  return(r.pvb)
+}
 
+# (0.5 + 0.05 * (i - 55)) * 
 
-
+PVB.retiree('M', 72, 2019, 16444)
+Cumulative.Generational.Survival.Rate('M', 66, 2019, 116)
 
 
 
