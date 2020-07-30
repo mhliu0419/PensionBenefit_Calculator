@@ -34,9 +34,23 @@ Generational.Mortality <- function(gender, current_age, current_year){
 }
 
 
-Cumulative.Generational.Mortality <- function(gender, age, current_year, )
+Cumulative.Generational.Survival.Rate <- function(gender, current_age, current_year, target_age){
+  
+  c.g.s.r <- 1
+  if ((target_age - current_age) > 0){
+    for (i in current_age:(target_age-1)) {
+      c.g.s.r <- c.g.s.r * (1 - Generational.Mortality(gender, i, current_year + i - current_age))
+    }
+    return(c.g.s.r)
+  }
+}
 
-
+Pension.Benefit.Retiree <- function(){
+  
+  
+  p.b.r <- 0.01 * (service.year)
+  
+}
 
 
 
